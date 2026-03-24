@@ -1,10 +1,59 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Bangalore House Price Predictor</title>
+  <title>House Price Predictor</title>
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      background: #f5f7fa;
+    }
+    .container {
+      margin-top: 50px;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, select {
+      margin: 10px;
+      padding: 10px;
+      width: 80%;
+    }
+    button {
+      padding: 10px 20px;
+      background: blue;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-  <h1>Welcome to House Price Predictor 🚀</h1>
-  <p>Your project is live!</p>
+
+<h1>🏠 Bangalore House Price Predictor</h1>
+
+<div class="container">
+
+  <label>Location</label><br>
+  <select>
+    <option>Indiranagar</option>
+    <option>Whitefield</option>
+    <option>Electronic City</option>
+  </select><br>
+
+  <label>Square Feet</label><br>
+  <input type="range" min="500" max="5000"><br>
+
+  <label>BHK</label><br>
+  <input type="number" placeholder="Enter BHK"><br>
+
+  <button>Predict Price</button>
+
+</div>
+
 </body>
 </html>
