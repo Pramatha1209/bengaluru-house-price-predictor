@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bengaluru House Price Predictor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #C17560;
+            --secondary: #1a1a1a;
+            --neutral-light: #f5f1e8;
+            --neutral-dark: #3a3a3a;
+            --neutral-gray: #808080;
+            --accent-teal: #5a9fa5;
+            --success: #6b9e7e;
+            --radius: 8px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+            background-color: var(--neutral-light);
+            color: var(--secondary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, #b8644f 100%);
+            border-radius: var(--radius);
+            color: white;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            font-size: 1rem;
+            opacity: 0.95;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+            align-items: start;
+        }
+
+        .form-section {
+            background: white;
+            padding: 40px;
+            border-radius: var(--radius);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .form-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--neutral-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--radius);
+            background-color: white;
+            color: var(--secondary);
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(193, 117, 96, 0.1);
+        }
+
+        input::placeholder {
+            color: var(--neutral-gray);
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .input-group .form-group {
+            margin-bottom: 0;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: var(--radius);
+            background-color: var(--primary);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 8px;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: #b8644f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(193, 117, 96, 0.3);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .result-section {
+            background: white;
+            padding: 40px;
+            border-radius: var(--radius);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            display: none;
+        }
+
+        .result-section.show {
+            display: block;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-label {
+            font-size: 0.85rem;
+            color: var(--neutral-gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .predicted-price {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--success);
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .price-currency {
+            font-size: 1.2rem;
+            color: var(--neutral-gray);
+        }
+
+        .result-details {
+            margin-top: 32px;
+            padding-top: 32px;
+            border-top: 1px solid #e0e0e0;
+            text-align: left;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            font-size: 0.95rem;
+        }
+
+        .detail-label {
+            color: var(--neutral-gray);
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #e0e0e0;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background-color: #fde8e8;
+            color: #c33;
+            padding: 16px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            border-left: 4px solid #c33;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .success-message {
+            background-color: #e8f5e9;
+            color: var(--success);
+            padding: 16px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            border-left: 4px solid var(--success);
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .input-group {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .predicted-price {
+                font-size: 2.5rem;
+            }
+
+            .form-section,
+            .result-section {
+                padding: 24px;
+            }
+        }
+
+        .info-box {
+            background-color: #f9f9f9;
+            padding: 16px;
+            border-radius: var(--radius);
+            margin-top: 24px;
+            border-left: 4px solid var(--accent-teal);
+        }
+
+        .info-box p {
+            font-size: 0.9rem;
+            color: var(--neutral-gray);
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Bengaluru House Price Predictor</h1>
+            <p>Get accurate price predictions for residential properties in Bengaluru using advanced machine learning</p>
+        </header>
+
+        <div class="main-grid">
+            <!-- Form Section -->
+            <div class="form-section">
+                <h2>Property Details</h2>
+
+                <div class="error" id="errorMessage"></div>
+                <div class="success-message" id="successMessage"></div>
+
+                <form id="predictionForm">
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        <select id="location" required>
+                            <option value="">Select a location...</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <div class="form-group">
+                            <label for="bhk">BHK (Bedrooms)</label>
+                            <input type="number" id="bhk" min="1" max="10" placeholder="e.g., 2" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="bath">Bathrooms</label>
+                            <input type="number" id="bath" min="1" max="10" placeholder="e.g., 2" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sqft">Total Square Feet</label>
+                        <input type="number" id="sqft" min="100" max="100000" placeholder="e.g., 1200" required>
+                    </div>
+
+                    <button type="submit" id="predictBtn">Predict Price</button>
+
+                    <div class="info-box">
+                        <p><strong>Note:</strong> Predictions are estimates based on historical market data. Actual prices may vary based on additional factors.</p>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Result Section -->
+            <div>
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Analyzing property data...</p>
+                </div>
+
+                <div class="result-section" id="resultSection">
+                    <div class="result-label">Estimated Price</div>
+                    <div class="predicted-price">
+                        <span class="price-currency">₹</span><span id="priceValue">0</span>
+                    </div>
+
+                    <div class="result-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Location</span>
+                            <span class="detail-value" id="resultLocation">—</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Bedrooms</span>
+                            <span class="detail-value" id="resultBHK">—</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Bathrooms</span>
+                            <span class="detail-value" id="resultBath">—</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Square Feet</span>
+                            <span class="detail-value" id="resultSqft">—</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Price per Sq. Ft.</span>
+                            <span class="detail-value" id="resultPricePerSqft">—</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5000'; // Flask backend URL
+
+        // Initialize form
+        document.addEventListener('DOMContentLoaded', () => {
+            loadLocations();
+            setupFormSubmit();
+        });
+
+        // Load locations from Flask API
+        async function loadLocations() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/get_locations`);
+                if (!response.ok) throw new Error('Failed to load locations');
+                
+                const locations = await response.json();
+                populateLocationDropdown(locations);
+            } catch (error) {
+                showError('Failed to load locations. Make sure your Flask backend is running.');
+                console.error('Error loading locations:', error);
+            }
+        }
+
+        // Populate location dropdown
+        function populateLocationDropdown(locations) {
+            const select = document.getElementById('location');
+            select.innerHTML = '<option value="">Select a location...</option>';
+            
+            locations.forEach(location => {
+                const option = document.createElement('option');
+                option.value = location;
+                option.textContent = location;
+                select.appendChild(option);
+            });
+        }
+
+        // Setup form submission
+        function setupFormSubmit() {
+            document.getElementById('predictionForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await predictPrice();
+            });
+        }
+
+        // Predict price
+        async function predictPrice() {
+            try {
+                clearMessages();
+                showLoading(true);
+
+                const formData = {
+                    location: document.getElementById('location').value,
+                    bhk: parseInt(document.getElementById('bhk').value),
+                    bath: parseInt(document.getElementById('bath').value),
+                    total_sqft: parseInt(document.getElementById('sqft').value)
+                };
+
+                // Validate form data
+                if (!formData.location) {
+                    throw new Error('Please select a location');
+                }
+                if (formData.bhk < 1 || formData.bath < 1 || formData.total_sqft < 100) {
+                    throw new Error('Please enter valid property details');
+                }
+
+                const response = await fetch(`${API_BASE_URL}/predict`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Prediction failed');
+                }
+
+                const result = await response.json();
+                displayResult(result, formData);
+                showSuccess('Price prediction completed successfully!');
+
+            } catch (error) {
+                showError(error.message || 'An error occurred during prediction');
+                console.error('Error:', error);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Display result
+        function displayResult(result, formData) {
+            const price = Math.round(result.price);
+            const pricePerSqft = Math.round(price / formData.total_sqft);
+
+            document.getElementById('priceValue').textContent = price.toLocaleString('en-IN');
+            document.getElementById('resultLocation').textContent = formData.location;
+            document.getElementById('resultBHK').textContent = `${formData.bhk} BHK`;
+            document.getElementById('resultBath').textContent = `${formData.bath} Bath`;
+            document.getElementById('resultSqft').textContent = `${formData.total_sqft.toLocaleString('en-IN')} Sq. Ft.`;
+            document.getElementById('resultPricePerSqft').textContent = `₹${pricePerSqft.toLocaleString('en-IN')}`;
+
+            document.getElementById('resultSection').classList.add('show');
+        }
+
+        // UI Helper functions
+        function showLoading(show) {
+            document.getElementById('loading').classList.toggle('show', show);
+            document.getElementById('predictBtn').disabled = show;
+        }
+
+        function showError(message) {
+            const errorEl = document.getElementById('errorMessage');
+            errorEl.textContent = message;
+            errorEl.classList.add('show');
+        }
+
+        function showSuccess(message) {
+            const successEl = document.getElementById('successMessage');
+            successEl.textContent = message;
+            successEl.classList.add('show');
+            setTimeout(() => successEl.classList.remove('show'), 4000);
+        }
+
+        function clearMessages() {
+            document.getElementById('errorMessage').classList.remove('show');
+            document.getElementById('successMessage').classList.remove('show');
+        }
+    </script>
+</body>
+</html>
